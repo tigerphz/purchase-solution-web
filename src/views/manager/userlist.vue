@@ -21,9 +21,14 @@
           <span>{{scope.row.username}}</span>
         </template>
       </el-table-column>
-       <el-table-column align="center" label="昵称" >
+      <el-table-column align="center" label="昵称" >
         <template slot-scope="scope">
           <span>{{scope.row.nickname}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="性别" >
+        <template slot-scope="scope">
+          <span>{{scope.row.gender | genderText}}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="手机号" >
@@ -187,10 +192,15 @@ export default {
           { required: true, message: '用户名必填', trigger: 'change' }
         ],
         password: [
-          { required: true, message: '昵称必填', trigger: 'change' }
+          { required: true, message: '密码必填', trigger: 'change' },
+          { validator: (rule, value, callback) => {
+            if (value.length < 6) {
+              callback(new Error('密码长度不能小于6位数'))
+            } else callback()
+          }, trigger: 'blur' }
         ],
         nickname: [
-          { required: true, message: '密码必填', trigger: 'change' }
+          { required: true, message: '昵称必填', trigger: 'change' }
         ],
         email: [
           { type: 'email', message: '请输入正确的邮箱地址', trigger: 'change' }
@@ -213,6 +223,9 @@ export default {
     },
     statusText(type) {
       return config.userStatusValue[type]
+    },
+    genderText(type) {
+      return config.userGenderValue[type]
     }
   },
   created() {

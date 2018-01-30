@@ -16,9 +16,16 @@ const genderEnum = [
   { key: 1, display_name: '男' }
 ]
 
+// arr to obj
+const userGenderValue = genderEnum.reduce((acc, cur) => {
+  acc[cur.key] = cur.display_name
+  return acc
+}, {})
+
 export default
 {
   userStatus,
   userStatusValue,
-  genderEnum
+  genderEnum,
+  userGenderValue
 }

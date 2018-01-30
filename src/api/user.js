@@ -34,3 +34,27 @@ export function updateStatus(data) {
     params: data
   })
 }
+
+export function updatePassword(data) {
+  return request({
+    url: '/users/password',
+    method: 'post',
+    data
+  })
+}
+
+export function getUserById(userId) {
+  return request({
+    url: '/users/info',
+    method: 'get',
+    params: { userId }
+  })
+}
+
+export function updateUserById(data) {
+  return request({
+    url: '/users/user',
+    method: 'post',
+    data
+  })
+}
