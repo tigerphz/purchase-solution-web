@@ -8,7 +8,7 @@
         </el-option>
       </el-select>
       <el-button class="filter-item" type="primary" v-waves icon="el-icon-search" @click="handleFilter">查询</el-button>
-      <el-button class="filter-item" style="margin-left: 10px;" @click="handleCreate" type="primary" icon="el-icon-edit">添加</el-button>
+      <el-button v-has-add:role class="filter-item" style="margin-left: 10px;" @click="handleCreate" type="primary" icon="el-icon-edit">添加</el-button>
       <el-button class="filter-item" type="primary" :loading="downloadLoading" v-waves icon="el-icon-download" @click="handleDownload">导出</el-button>
     </div>
 
@@ -41,13 +41,13 @@
       </el-table-column>
       <el-table-column align="center" label="操作" class-name="small-padding fixed-width" width="300px">
         <template slot-scope="scope">
-          <el-button type="primary" size="mini" @click="handleOpenPermDialog(scope.row)">权限</el-button>
-          <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">编辑</el-button>
-          <el-button v-if="scope.row.status!='-1'" size="mini" type="success" @click="handleModifyStatus(scope.row,'-1')">删除
+          <el-button v-has-perm:role:permissions type="primary" size="mini" @click="handleOpenPermDialog(scope.row)">权限</el-button>
+          <el-button v-has-update:role v-if="scope.row.status==='0'" type="primary" size="mini" @click="handleUpdate(scope.row)">编辑</el-button>
+          <el-button v-has-status:role v-if="scope.row.status!='-1'" size="mini" type="success" @click="handleModifyStatus(scope.row,'-1')">删除
           </el-button>
-          <el-button v-if="scope.row.status!='0'" size="mini" @click="handleModifyStatus(scope.row,'0')">正常
+          <el-button v-has-status:role v-if="scope.row.status!='0'" size="mini" @click="handleModifyStatus(scope.row,'0')">正常
           </el-button>
-          <el-button v-if="scope.row.status!='1'" size="mini" type="danger" @click="handleModifyStatus(scope.row,'1')">锁定
+          <el-button v-has-status:role v-if="scope.row.status!='1'" size="mini" type="danger" @click="handleModifyStatus(scope.row,'1')">锁定
           </el-button>
         </template>
       </el-table-column>
@@ -275,7 +275,8 @@ export default {
       this.curRoleId = row.id
     },
     updateRolePermsData() {
-      const rolePerms = this.$refs.permTree.getCheckedKeys()
+      // 返回被选中的叶子节点的 keys
+      const rolePerms = this.$refs.permTree.getCheckedKeys(true)
       updateRolePerms({ roleId: this.curRoleId, permIds: rolePerms }).then(() => {
         this.dialogTreeVisible = false
         this.$notify({

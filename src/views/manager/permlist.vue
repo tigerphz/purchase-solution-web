@@ -7,10 +7,10 @@
         <el-option v-for="item in  userStatus" :key="item.key" :label="item.display_name" :value="item.key">
         </el-option>
       </el-select>
-      <el-button v-if="false" class="filter-item" type="primary" v-waves icon="el-icon-search" @click="handleFilter">查询</el-button>
-      <el-button class="filter-item" style="margin-left: 10px;" @click="handleTopCreate" type="primary" icon="el-icon-edit">添加</el-button>
+      <el-button class="filter-item" type="primary" v-waves icon="el-icon-search" @click="handleFilter">查询</el-button>
+      <el-button v-has-add:permission class="filter-item" style="margin-left: 10px;" @click="handleTopCreate" type="primary" icon="el-icon-edit">添加</el-button>
       <el-button class="filter-item" type="primary" :loading="downloadLoading" v-waves icon="el-icon-download" @click="handleDownload">导出</el-button>
-      <el-button class="filter-item" type="primary" v-waves icon="el-icon-refresh" @click="handleFlashPerms">更新权限</el-button>
+      <el-button v-has-perm:permission:flashPerms class="filter-item" type="primary" v-waves icon="el-icon-refresh" @click="handleFlashPerms">更新权限</el-button>
     </div>
 
     <tree-table :key='tableKey' :data="list" v-loading="listLoading" element-loading-text="努力加载中" border fit highlight-current-row
@@ -57,13 +57,13 @@
       </el-table-column>
       <el-table-column align="center" label="操作" class-name="small-padding fixed-width" width="300px">
         <template slot-scope="scope">
-          <el-button type="primary" size="mini" v-if="scope.row.type!==2" @click="handleChildrenCreate(scope.row)">添加</el-button>
-          <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">编辑</el-button>
-          <el-button v-if="scope.row.status!='-1'" size="mini" type="success" @click="handleModifyStatus(scope.row,'-1')">删除
+          <el-button v-has-add:permission type="primary" size="mini" v-if="scope.row.type!==2" @click="handleChildrenCreate(scope.row)">添加</el-button>
+          <el-button v-has-update:permission v-if="scope.row.status==='0'" type="primary" size="mini" @click="handleUpdate(scope.row)">编辑</el-button>
+          <el-button v-has-status:permission v-if="scope.row.status!='-1'" size="mini" type="success" @click="handleModifyStatus(scope.row,'-1')">删除
           </el-button>
-          <el-button v-if="scope.row.status!='0'" size="mini" @click="handleModifyStatus(scope.row,'0')">正常
+          <el-button v-has-status:permission v-if="scope.row.status!='0'" size="mini" @click="handleModifyStatus(scope.row,'0')">正常
           </el-button>
-          <el-button v-if="scope.row.status!='1'" size="mini" type="danger" @click="handleModifyStatus(scope.row,'1')">锁定
+          <el-button v-has-status:permission v-if="scope.row.status!='1'" size="mini" type="danger" @click="handleModifyStatus(scope.row,'1')">锁定
           </el-button>
         </template>
       </el-table-column>
