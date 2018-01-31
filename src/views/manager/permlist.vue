@@ -58,7 +58,7 @@
       <el-table-column align="center" label="操作" class-name="small-padding fixed-width" width="300px">
         <template slot-scope="scope">
           <el-button v-has-add:permission type="primary" size="mini" v-if="scope.row.type!==2" @click="handleChildrenCreate(scope.row)">添加</el-button>
-          <el-button v-has-update:permission v-if="scope.row.status==='0'" type="primary" size="mini" @click="handleUpdate(scope.row)">编辑</el-button>
+          <el-button v-has-update:permission v-if="scope.row.status=='0'" type="primary" size="mini" @click="handleUpdate(scope.row)">编辑</el-button>
           <el-button v-has-status:permission v-if="scope.row.status!='-1'" size="mini" type="success" @click="handleModifyStatus(scope.row,'-1')">删除
           </el-button>
           <el-button v-has-status:permission v-if="scope.row.status!='0'" size="mini" @click="handleModifyStatus(scope.row,'0')">正常
