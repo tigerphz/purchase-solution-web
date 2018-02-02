@@ -25,7 +25,7 @@
           <span>{{scope.row.type | typeText}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="地址url" width="190px">
+      <el-table-column align="center" label="地址url" width="210px">
         <template slot-scope="scope">
           <span>{{scope.row.url}}</span>
         </template>
