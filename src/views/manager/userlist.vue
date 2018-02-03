@@ -83,7 +83,7 @@
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form :rules="rules" ref="dataForm" :model="temp" label-position="left" label-width="100px" style='width: 400px; margin-left:50px;'>
-        <el-form-item label="用户名" prop="username">
+        <el-form-item v-if="dialogStatus=='create'" label="用户名" prop="username">
           <el-input v-model="temp.username"></el-input>
         </el-form-item>
         <el-form-item label="密码" v-if="dialogStatus=='create'" prop="password">
