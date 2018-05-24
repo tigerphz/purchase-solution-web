@@ -104,6 +104,16 @@
             </el-option>
           </el-select>
         </el-form-item>
+        <el-form-item label="部门"> 
+          <el-select v-model="temp.deptid" placeholder="请选择">
+            <el-option
+              v-for="item in departments"
+              :key="item.id"
+              :label="item.deptname"
+              :value="item.id">
+            </el-option>
+          </el-select>
+        </el-form-item>
          <el-form-item label="手机号">
           <el-input v-model="temp.cellphone"></el-input>
         </el-form-item>
@@ -138,25 +148,22 @@
 </template>
 
 <style scoped>
-.el-dialog__body{
-  padding: 1px 20px；
+.el-dialog__body {
+  padding: 1px 20px；;
 }
 </style>
 
 <script>
-import {
-  fetchList,
-  createUser,
-  updateUser,
-  updateStatus
-} from '@/api/user'
-import { getUserRoles, getAllRoles, updateUserRoles } from '@/api/role'
-import waves from '@/directive/waves' // 水波纹指令
-import { parseTime } from '@/utils'
-import config from '@/utils/config'
+/* eslint-disable */
+import { fetchList, createUser, updateUser, updateStatus } from "@/api/user";
+import { getUserRoles, getAllRoles, updateUserRoles } from "@/api/role";
+import { fetchList as departFetchList } from "@/api/department";
+import waves from "@/directive/waves"; // 水波纹指令
+import { parseTime } from "@/utils";
+import config from "@/utils/config";
 
 export default {
-  name: 'listUser',
+  name: "listUser",
   directives: {
     waves
   },
@@ -179,57 +186,57 @@ export default {
       dialogTransferVisible: false,
       userRoles: [],
       roles: [],
+      departments: [],
       curUserId: undefined,
-      dialogStatus: '',
+      dialogStatus: "",
       textMap: {
-        update: '编辑',
-        create: '添加'
+        update: "编辑",
+        create: "添加"
       },
       temp: this.initCreateUpdateTemp(),
       dialogPvVisible: false,
       rules: {
         username: [
-          { required: true, message: '用户名必填', trigger: 'change' }
+          { required: true, message: "用户名必填", trigger: "change" }
         ],
         password: [
-          { required: true, message: '密码必填', trigger: 'change' },
-          { validator: (rule, value, callback) => {
-            if (value.length < 6) {
-              callback(new Error('密码长度不能小于6位数'))
-            } else callback()
-          }, trigger: 'blur' }
+          { required: true, message: "密码必填", trigger: "change" },
+          {
+            validator: (rule, value, callback) => {
+              if (value.length < 6) {
+                callback(new Error("密码长度不能小于6位数"));
+              } else callback();
+            },
+            trigger: "blur"
+          }
         ],
-        nickname: [
-          { required: true, message: '昵称必填', trigger: 'change' }
-        ],
+        nickname: [{ required: true, message: "昵称必填", trigger: "change" }],
         email: [
-          { type: 'email', message: '请输入正确的邮箱地址', trigger: 'change' }
+          { type: "email", message: "请输入正确的邮箱地址", trigger: "change" }
         ],
-        status: [
-          { required: true, message: '状态必填', trigger: 'change' }
-        ]
+        status: [{ required: true, message: "状态必填", trigger: "change" }]
       },
       downloadLoading: false
-    }
+    };
   },
   filters: {
     statusFilter(status) {
       const statusMap = {
-        '0': 'success',
-        '1': 'info',
-        '-1': 'danger'
-      }
-      return statusMap[status]
+        "0": "success",
+        "1": "info",
+        "-1": "danger"
+      };
+      return statusMap[status];
     },
     statusText(type) {
-      return config.userStatusValue[type]
+      return config.userStatusValue[type];
     },
     genderText(type) {
-      return config.userGenderValue[type]
+      return config.userGenderValue[type];
     }
   },
   created() {
-    this.getList()
+    this.getList();
   },
   methods: {
     initCreateUpdateTemp() {
@@ -238,159 +245,180 @@ export default {
         username: null,
         password: null,
         nickname: null,
+        deptid: null,
         gender: null,
         cellphone: null,
         identitycard: null,
         email: null,
         address: null,
         status: 0
-      }
+      };
     },
     getList() {
-      this.listLoading = true
+      this.listLoading = true;
       fetchList(this.listQuery).then(response => {
-        this.list = response.data.list
-        this.total = response.data.total * 1
-        this.listLoading = false
-      })
+        this.list = response.data.list;
+        this.total = response.data.total * 1;
+        this.listLoading = false;
+      });
+    },
+    loadDepartment() {
+      if (this.departments.length > 0) return;
+      let query = { status: 0 };
+      departFetchList(query).then(response => {
+        this.departments = response.data.list;
+      });
     },
     handleFilter() {
-      this.listQuery.pageNum = 1
-      this.getList()
+      this.listQuery.pageNum = 1;
+      this.getList();
     },
     handleSizeChange(val) {
-      this.listQuery.pageSize = val
-      this.getList()
+      this.listQuery.pageSize = val;
+      this.getList();
     },
     handleCurrentChange(val) {
-      this.listQuery.pageNum = val
-      this.getList()
+      this.listQuery.pageNum = val;
+      this.getList();
     },
     handleModifyStatus(row, status) {
-      const id = row.id
+      const id = row.id;
       updateStatus({ id, status }).then(() => {
         this.$notify({
-          message: '操作成功',
-          type: 'success'
-        })
-        row.status = status
-      })
+          message: "操作成功",
+          type: "success"
+        });
+        row.status = status;
+      });
     },
     resetTemp() {
-      this.temp = this.initCreateUpdateTemp()
+      this.temp = this.initCreateUpdateTemp();
     },
     handleCreate() {
-      this.resetTemp()
-      this.dialogStatus = 'create'
-      this.dialogFormVisible = true
+      this.loadDepartment();
+      this.resetTemp();
+      this.dialogStatus = "create";
+      this.dialogFormVisible = true;
       this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
+        this.$refs["dataForm"].clearValidate();
+      });
     },
     createData() {
-      this.$refs['dataForm'].validate(valid => {
+      this.$refs["dataForm"].validate(valid => {
         if (valid) {
           createUser(this.temp).then(() => {
-            this.getList()// 重新加载列表
-            this.dialogFormVisible = false
+            this.getList(); // 重新加载列表
+            this.dialogFormVisible = false;
             this.$notify({
-              title: '成功',
-              message: '创建成功',
-              type: 'success',
+              title: "成功",
+              message: "创建成功",
+              type: "success",
               duration: 2000
-            })
-          })
+            });
+          });
         }
-      })
+      });
     },
     handleUpdate(row) {
-      const r = Object.assign({}, row) // copy obj
+      this.loadDepartment();
+      const r = Object.assign({}, row); // copy obj
       for (var property in this.temp) {
-        this.temp[property] = r[property]
+        this.temp[property] = r[property];
       }
-      this.dialogStatus = 'update'
-      this.dialogFormVisible = true
+      this.dialogStatus = "update";
+      this.dialogFormVisible = true;
       this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
+        this.$refs["dataForm"].clearValidate();
+      });
     },
     updateData() {
-      this.$refs['dataForm'].validate(valid => {
+      this.$refs["dataForm"].validate(valid => {
         if (valid) {
-          const tempData = Object.assign({}, this.temp)
+          const tempData = Object.assign({}, this.temp);
           updateUser(tempData).then(() => {
-            this.getList()// 重新加载列表
-            this.dialogFormVisible = false
+            this.getList(); // 重新加载列表
+            this.dialogFormVisible = false;
             this.$notify({
-              title: '成功',
-              message: '更新成功',
-              type: 'success',
+              title: "成功",
+              message: "更新成功",
+              type: "success",
               duration: 2000
-            })
-          })
+            });
+          });
         }
-      })
+      });
     },
     handleOpenRoleDialog(row) {
       getUserRoles(row.id).then(response => {
         this.userRoles = response.data.map(d => {
-          return d.id
-        })
-      })
+          return d.id;
+        });
+      });
       if (this.roles.length === 0) {
         getAllRoles().then(response => {
           this.roles = response.data.map(x => {
-            return { id: x.id, rolename: `${x.rolename}(${x.description})` }
-          })
-        })
+            return { id: x.id, rolename: `${x.rolename}(${x.description})` };
+          });
+        });
       }
 
-      this.curUserId = row.id
-      this.dialogTransferVisible = true
+      this.curUserId = row.id;
+      this.dialogTransferVisible = true;
     },
     updateUserRolesData() {
-      updateUserRoles({ userId: this.curUserId, roleIds: this.userRoles }).then(() => {
-        this.dialogTransferVisible = false
-        this.$notify({
-          title: '成功',
-          message: '更新角色成功',
-          type: 'success',
-          duration: 2000
-        })
-      })
+      updateUserRoles({ userId: this.curUserId, roleIds: this.userRoles }).then(
+        () => {
+          this.dialogTransferVisible = false;
+          this.$notify({
+            title: "成功",
+            message: "更新角色成功",
+            type: "success",
+            duration: 2000
+          });
+        }
+      );
     },
     handleDownload() {
-      this.downloadLoading = true
-      import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = ['用户名', '昵称', '手机号', '邮箱', '地址', '创建日期', '创建人', '状态']
+      this.downloadLoading = true;
+      import("@/vendor/Export2Excel").then(excel => {
+        const tHeader = [
+          "用户名",
+          "昵称",
+          "手机号",
+          "邮箱",
+          "地址",
+          "创建日期",
+          "创建人",
+          "状态"
+        ];
         const filterVal = [
-          'username',
-          'nickname',
-          'cellphone',
-          'email',
-          'address',
-          'createdate',
-          'createusername',
-          'status'
-        ]
-        const data = this.formatJson(filterVal, this.list)
-        excel.export_json_to_excel(tHeader, data, '用户列表')
-        this.downloadLoading = false
-      })
+          "username",
+          "nickname",
+          "cellphone",
+          "email",
+          "address",
+          "createdate",
+          "createusername",
+          "status"
+        ];
+        const data = this.formatJson(filterVal, this.list);
+        excel.export_json_to_excel(tHeader, data, "用户列表");
+        this.downloadLoading = false;
+      });
     },
     formatJson(filterVal, jsonData) {
       return jsonData.map(v =>
         filterVal.map(j => {
-          if (j === 'createdate') {
-            return parseTime(v[j])
-          } else if (j === 'status') {
-            return config.userStatusValue[v[j]]
+          if (j === "createdate") {
+            return parseTime(v[j]);
+          } else if (j === "status") {
+            return config.userStatusValue[v[j]];
           } else {
-            return v[j]
+            return v[j];
           }
         })
-      )
+      );
     }
   }
-}
+};
 </script>

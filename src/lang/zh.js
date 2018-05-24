@@ -2,6 +2,7 @@ export default {
   route: {
     dashboard: '首页',
     manager: '系统管理',
+    listDepartment: '部门列表',
     listUser: '用户列表',
     listRole: '角色列表',
     listPerm: '权限列表',

@@ -68,6 +68,7 @@ export const asyncRouterMap = [
       icon: 'component'
     },
     children: [
+      { path: 'list-department', component: _import('manager/department'), name: 'listDepartment', meta: { title: 'listDepartment', icon: 'people', perms: ['department:view'] }},
       { path: 'list-user', component: _import('manager/userlist'), name: 'listUser', meta: { title: 'listUser', icon: 'people', perms: ['user:view'] }},
       { path: 'list-role', component: _import('manager/rolelist'), name: 'listRole', meta: { title: 'listRole', icon: 'peoples', perms: ['role:view'] }},
       { path: 'list-perm', component: _import('manager/permlist'), name: 'listPerm', meta: { title: 'listPerm', icon: 'lock', perms: ['permission:view'] }}
